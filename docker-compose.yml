@@ -28,6 +28,9 @@ services:
     depends_on:
       - sentry-redis
       - sentry-postgres
+    links:
+      - sentry-redis
+      - sentry-postgres
     command: run web
 
   sentry-worker:
@@ -40,6 +43,9 @@ services:
     depends_on:
       - sentry-redis
       - sentry-postgres
+    links:
+      - sentry-redis
+      - sentry-postgres
     command: run worker
 
   sentry-cron:
@@ -50,6 +56,9 @@ services:
     volumes:
       - /opt/docker/sentry/sentry:/var/lib/sentry/files
     depends_on:
+      - sentry-redis
+      - sentry-postgres
+    links:
       - sentry-redis
       - sentry-postgres
     command: run cron
