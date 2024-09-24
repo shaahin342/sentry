@@ -22,7 +22,7 @@ EOT
 
 echo "Build Sentry onpremise"
 # Build the Sentry project using the make build command.
-make build
+# make build
 
 # Stop and remove any existing Sentry-related Docker containers.
 docker container stop sentry-cron sentry-worker sentry-web sentry-postgres sentry-redis
@@ -57,7 +57,7 @@ docker run \
   --link sentry-postgres:postgres \
   --env SENTRY_SECRET_KEY=${SENTRY_SECRET_KEY} \
   -v /opt/docker/sentry/sentry:/var/lib/sentry/files \
-  sentry:9.1.2 \
+  sentry \
   upgrade
 
 echo "install plugins"
@@ -80,9 +80,9 @@ docker run \
   --link sentry-postgres:postgres \
   --env SENTRY_SECRET_KEY=${SENTRY_SECRET_KEY} \
   --name sentry-web \
-  --publish 8080:9000 \
+  --publish 9000:9000 \
   -v /opt/docker/sentry/sentry:/var/lib/sentry/files \
-  sentry:9.1.2 \
+  sentry \
   run web
 sleep 15
 
@@ -95,7 +95,7 @@ docker run \
   --env SENTRY_SECRET_KEY=${SENTRY_SECRET_KEY} \
   --name sentry-worker \
   -v /opt/docker/sentry/sentry:/var/lib/sentry/files \
-  sentry:9.1.2 \
+  sentry \
   run worker
 sleep 15
 
@@ -108,7 +108,7 @@ docker run \
   --env SENTRY_SECRET_KEY=${SENTRY_SECRET_KEY} \
   --name sentry-cron \
   -v /opt/docker/sentry/sentry:/var/lib/sentry/files \
-  sentry:9.1.2 \
+  sentry \
   run cron
 
 # echo "Set config https://github.com/getsentry/sentry/issues/12722"

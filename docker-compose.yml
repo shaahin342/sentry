@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  sentry-redis:
+    image: redis:3.2-alpine
+    container_name: sentry-redis
+    restart: unless-stopped
+
+  sentry-postgres:
+    image: postgres:11
+    container_name: sentry-postgres
+    environment:
+      POSTGRES_PASSWORD: 'sentry'
+      POSTGRES_USER: 'sentry'
+    volumes:
+      - /opt/docker/sentry/postgres:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  sentry-web:
+    image: sentry
+    container_name: sentry-web
+    environment:
+      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY}
+    ports:
+      - "8080:9000"
+    volumes:
+      - /opt/docker/sentry/sentry:/var/lib/sentry/files
+    depends_on:
+      - sentry-redis
+      - sentry-postgres
+    command: run web
+
+  sentry-worker:
+    image: sentry
+    container_name: sentry-worker
+    environment:
+      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY}
+    volumes:
+      - /opt/docker/sentry/sentry:/var/lib/sentry/files
+    depends_on:
+      - sentry-redis
+      - sentry-postgres
+    command: run worker
+
+  sentry-cron:
+    image: sentry
+    container_name: sentry-cron
+    environment:
+      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY}
+    volumes:
+      - /opt/docker/sentry/sentry:/var/lib/sentry/files
+    depends_on:
+      - sentry-redis
+      - sentry-postgres
+    command: run cron
